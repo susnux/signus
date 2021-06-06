@@ -5,33 +5,44 @@ AC_PREREQ(2.52)
 
 AC_INIT([signus-data], [1.96], [vslavik@fastmail.fm])
 
-AC_CONFIG_SRCDIR([utils/makedat.cpp])
 AC_CONFIG_AUX_DIR([admin])
 
 AC_CANONICAL_SYSTEM
 
 AM_INIT_AUTOMAKE
 
-dnl Checks for programs.
-AC_PROG_INSTALL
-AC_PROG_LN_S
-AC_PROG_RANLIB
-AC_PROG_CC
-AC_PROG_CXX
-AC_PROG_CXXCPP
+AC_ARG_WITH([utils],
+  [AS_HELP_STRING([--without-utils],
+    [Do not build utils])],
+    [],
+    [with_utils=yes])
 
-PKG_CHECK_MODULES([libpng], [libpng])
+AS_IF([test "x$with_utils" != xno], [
+  AC_CONFIG_SRCDIR([utils/makedat.cpp])
 
-MAKEDAT='MAKEDAT_PALETTE="$(top_srcdir)/data/nolang/graphics/palette.col" $(top_builddir)/utils/makedat'
-AC_SUBST(MAKEDAT)
-MK_RGB2PAL='$(top_builddir)/utils/mk_rgb2pal'
-AC_SUBST(MK_RGB2PAL)
-FNTMNG='$(top_builddir)/utils/fntmng'
-AC_SUBST(FNTMNG)
+  dnl Checks for programs.
+  AC_PROG_INSTALL
+  AC_PROG_LN_S
+  AC_PROG_RANLIB
+  AC_PROG_CC
+  AC_PROG_CXX
+  AC_PROG_CXXCPP
 
-AC_OUTPUT([
+  PKG_CHECK_MODULES([libpng], [libpng])
+
+  MAKEDAT='MAKEDAT_PALETTE="$(top_srcdir)/data/nolang/graphics/palette.col" $(top_builddir)/utils/makedat'
+  AC_SUBST(MAKEDAT)
+  MK_RGB2PAL='$(top_builddir)/utils/mk_rgb2pal'
+  AC_SUBST(MK_RGB2PAL)
+  FNTMNG='$(top_builddir)/utils/fntmng'
+  AC_SUBST(FNTMNG)
+
+  AC_CONFIG_FILES([utils/Makefile])
+])
+AM_CONDITIONAL([BUILD_UTILS], [test "x$with_utils" != xno])
+
+AC_CONFIG_FILES([
          Makefile
-         utils/Makefile
          data/Makefile
          data/nolang/Makefile
          data/nolang/anims/Makefile
@@ -52,3 +63,4 @@ AC_OUTPUT([
          data/cs/texts/Makefile
          data/version-data
          ])
+AC_OUTPUT
